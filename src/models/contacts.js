@@ -2,7 +2,7 @@
 const fs = require("fs").promises;
 const path = require("path");
 const shortid = require("shortid");
-const contactsPath = path.resolve("./models/contacts.json");
+const contactsPath = path.resolve("./src/models/contacts.json");
 
 const readContacts = () => fs.readFile(contactsPath, "utf8");
 
