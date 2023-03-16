@@ -4,14 +4,14 @@ const { User } = require("../database/userModel");
 
 const authMiddleware = async (req, res, next) => {
   try {
-    if (!req.headers["authorization"])
+    if (!req.headers.authorization)
       next(
         new NotAuthorizedError(
           "Please, provide a token in request authorization header"
         )
       );
 
-    const [_, token] = req.headers["authorization"].split(" ");
+    const [, token] = req.headers.authorization.split(" ");
 
     if (!token || !jsonwebtoken.decode(token, process.env.SECRET_KEY))
       next(new NotAuthorizedError("Please, provide a token"));

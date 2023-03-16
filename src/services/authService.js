@@ -3,23 +3,31 @@ const jsonwebtoken = require("jsonwebtoken");
 const { User } = require("../database/userModel");
 const { NotAuthorizedError, EmailConflictError } = require("../helpers/errors");
 const { createToken } = require("../helpers/apiHelpers");
+const gravatar = require("gravatar");
 
 const registration = async (email, password) => {
   const foundUser = await User.findOne({ email });
 
   if (foundUser) throw new EmailConflictError(`Email ${email} in use`);
 
+  const avatarURL = gravatar.url(
+    email,
+    { s: "100", r: "x", d: "robohash" },
+    true
+  );
+
   const user = new User({
     email,
     password,
+    avatarURL,
   });
 
   await user.save();
-  const token = await createToken(user);
+  const { token } = await login(email, password);
 
   const { email: userEmail, subscription } = user;
 
-  return { userEmail, subscription, token };
+  return { userEmail, subscription, token, avatarURL };
 };
 
 const login = async (email, password) => {
