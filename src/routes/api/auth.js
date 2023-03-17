@@ -6,6 +6,7 @@ const {
   logoutController,
   currentUserController,
   changeSubscriptionController,
+  changeAvatarController,
 } = require("../../controllers/authController");
 
 const { asyncWrapper } = require("../../helpers/apiHelpers");
@@ -15,6 +16,7 @@ const {
   changeSubscriptionValidation,
 } = require("../../middlewares/validationMiddlewares");
 const { authMiddleware } = require("../../middlewares/authMiddleware");
+const { uploadMiddleware } = require("../../helpers/multerConfig");
 
 const router = express.Router();
 
@@ -31,6 +33,14 @@ router.patch(
   authMiddleware,
   changeSubscriptionValidation,
   asyncWrapper(changeSubscriptionController)
+);
+
+router.patch(
+  "/avatars",
+  authMiddleware,
+  uploadMiddleware.single("avatar"),
+
+  asyncWrapper(changeAvatarController)
 );
 
 module.exports = router;
