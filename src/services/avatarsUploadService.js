@@ -3,7 +3,7 @@ const fs = require("fs").promises;
 const Jimp = require("jimp");
 
 const avatarSave = async (temporaryName, id) => {
-  const storeImage = path.resolve("./public/avatars");
+  const storeImage = path.resolve("../../public/avatars");
 
   const [, extension] = temporaryName.split(".");
   const newName = id + "." + extension;
