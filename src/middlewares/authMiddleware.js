@@ -13,10 +13,10 @@ const authMiddleware = async (req, res, next) => {
 
     const [, token] = req.headers.authorization.split(" ");
 
-    if (!token || !jsonwebtoken.decode(token, process.env.SECRET_KEY))
+    if (!token || !jsonwebtoken.verify(token, process.env.SECRET_KEY))
       next(new NotAuthorizedError("Please, provide a token"));
 
-    const user = jsonwebtoken.decode(token, process.env.SECRET_KEY);
+    const user = jsonwebtoken.verify(token, process.env.SECRET_KEY);
     const foundUser = await User.findById(user._id);
 
     if (!foundUser) next(new NotAuthorizedError("Not authorized"));

@@ -37,27 +37,27 @@ const registration = async (email, password) => {
   return { userEmail, subscription, token, avatarURL };
 };
 
-const login = async (email, password) => {
-  const user = await User.findOne({ email });
+const login = async (reqEmail, password) => {
+  const user = await User.findOne({ email: reqEmail });
 
-  if (!user) throw new NotAuthorizedError(`No user with email ${email} found`);
+  if (!user) throw new NotAuthorizedError(`No user with email ${reqEmail} found`);
 
   if (!(await bcrypt.compare(password, user.password)))
     throw new NotAuthorizedError("Wrong password");
 
   const token = await createToken(user);
 
-  const { _id, subscription } = user;
+  const { _id, subscription, email } = user;
 
-  return { token, _id, subscription };
+  return { token, _id, subscription, email };
 };
 
 const logout = async (token) => {
-  if (!token || !jsonwebtoken.decode(token, process.env.SECRET_KEY))
+  if (!token || !jsonwebtoken.verify(token, process.env.SECRET_KEY))
     throw new NotAuthorizedError("Not authorized");
 
   try {
-    const user = jsonwebtoken.decode(token, process.env.SECRET_KEY);
+    const user = jsonwebtoken.verify(token, process.env.SECRET_KEY);
     const foundUser = await User.findByIdAndUpdate(user?._id, { token: null });
     if (!foundUser) throw new NotAuthorizedError("Not authorized");
   } catch (error) {
@@ -119,7 +119,6 @@ const changeAvatar = async (file, id) => {
     throw new ValidationError("file must be '.jpg' or '.png'");
   }
 
-  // const [, extension] = temporaryName.split(".");
   const newName = id + "." + extension;
   const fileName = path.join(storeImage, newName);
 
@@ -127,9 +126,14 @@ const changeAvatar = async (file, id) => {
     const avatarDir = await fs.readdir(storeImage);
     const oldAvatar = avatarDir.find((el) => el.includes(id));
 
-    if (oldAvatar) await fs.unlink(storeImage + "/" + oldAvatar);
-
     await fs.rename(temporaryName, fileName);
+
+  if (oldAvatar) {
+    const [, extension] = fileName?.split(".");
+    const [, oldExtension] = oldAvatar.split(".");
+    if (extension !== oldExtension)
+      await fs.unlink(storeImage + "/" + oldAvatar);
+  }
 
     Jimp.read(fileName, (err, avatar) => {
       if (err) throw err;
