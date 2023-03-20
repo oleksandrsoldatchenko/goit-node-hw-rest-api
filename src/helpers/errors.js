@@ -1,32 +1,32 @@
-class customError extends Error {
+class CustomError extends Error {
   constructor(message) {
     super(message);
     this.status = 400;
   }
 }
 
-class ValidationError extends customError {
+class ValidationError extends CustomError {
   constructor(message) {
     super(message);
     this.status = 400;
   }
 }
 
-class WrongParametersError extends customError {
+class WrongParametersError extends CustomError {
   constructor(message) {
     super(message);
     this.status = 404;
   }
 }
 
-class NotAuthorizedError extends customError {
+class NotAuthorizedError extends CustomError {
   constructor(message) {
     super(message);
     this.status = 401;
   }
 }
 
-class EmailConflictError extends customError {
+class EmailConflictError extends CustomError {
   constructor(message) {
     super(message);
     this.status = 409;
@@ -34,7 +34,7 @@ class EmailConflictError extends customError {
 }
 
 module.exports = {
-  customError,
+  CustomError,
   ValidationError,
   WrongParametersError,
   NotAuthorizedError,
