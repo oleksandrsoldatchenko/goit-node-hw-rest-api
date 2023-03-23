@@ -1,5 +1,8 @@
 const {
   registration,
+  verifyRegistration,
+  reSendVerifyRegister,
+  forgotPassword,
   login,
   logout,
   getCurrentUser,
@@ -22,6 +25,30 @@ const registrationController = async (req, res) => {
       avatarURL,
     },
   });
+};
+
+const registrationVerifyController = async (req, res) => {
+  const { verificationToken } = req.params;
+
+  await verifyRegistration(verificationToken);
+
+  res.status(200).json({ message: "Verification successful" });
+};
+
+const reSendVerifyRegisterController = async (req, res) => {
+  const { email } = req.body;
+
+  await reSendVerifyRegister(email);
+
+  res.status(200).json({ message: "Verification email sent" });
+};
+
+const forgotPasswordController = async (req, res) => {
+  const { email } = req.body;
+
+  await forgotPassword(email);
+
+  res.status(200).json({ status: "success" });
 };
 
 const loginController = async (req, res) => {
@@ -63,6 +90,9 @@ const changeAvatarController = async (req, res) => {
 
 module.exports = {
   registrationController,
+  registrationVerifyController,
+  reSendVerifyRegisterController,
+  forgotPasswordController,
   loginController,
   logoutController,
   currentUserController,
