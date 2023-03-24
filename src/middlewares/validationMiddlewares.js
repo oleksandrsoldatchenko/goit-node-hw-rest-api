@@ -17,7 +17,6 @@ module.exports = {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error) {
-      // return res.status(400).json({ message: "missing fields" });
       next(new ValidationError(validationResult.error.message));
     }
     next();
@@ -36,7 +35,6 @@ module.exports = {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error) {
-      // return res.status(400).json({ message: "missing fields" });
       next(new ValidationError(validationResult.error.message));
     }
     next();
@@ -49,7 +47,6 @@ module.exports = {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error) {
-      // return res.status(400).json({ message: "missing fields" });
       next(new ValidationError(JSON.stringify(validationResult.error.message)));
     }
     next();
@@ -63,8 +60,24 @@ module.exports = {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error) {
-      // return res.status(400).json({ message: "missing fields" });
       next(new ValidationError(JSON.stringify(validationResult.error.message)));
+    }
+    next();
+  },
+
+  reSendVerifyRegisterValidation: (req, res, next) => {
+    const schema = Joi.object({
+      email: Joi.string()
+        .email({
+          minDomainSegments: 2,
+          tlds: { allow: ["com", "net"] },
+        })
+        .required(),
+    });
+    const validationResult = schema.validate(req.body);
+
+    if (validationResult.error) {
+      next(res.status(400).json({ message: "missing required field email" }));
     }
     next();
   },
@@ -76,7 +89,6 @@ module.exports = {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error) {
-      // return res.status(400).json({ message: "missing fields" });
       next(new ValidationError(JSON.stringify(validationResult.error.message)));
     }
     next();

@@ -1,5 +1,8 @@
 const {
   registration,
+  verifyRegistration,
+  reSendVerifyRegister,
+  forgotPassword,
   login,
   logout,
   getCurrentUser,
@@ -9,19 +12,41 @@ const {
 
 const registrationController = async (req, res) => {
   const { email, password } = req.body;
-  const { userEmail, subscription, token, avatarURL } = await registration(
-    email,
-    password
-  );
+  await registration(email, password);
 
   res.status(201).json({
-    token,
-    user: {
-      email: userEmail,
-      subscription,
-      avatarURL,
-    },
+    message: `Please confirm your email. We send confirmation letter to: ${email}`,
   });
+};
+
+const registrationVerifyController = async (req, res) => {
+  const { verificationToken } = req.params;
+
+  const { email, subscription, avatarURL, token } = await verifyRegistration(
+    verificationToken
+  );
+
+  res.status(200).json({
+    message: `Verification successful. Welcome ${email} `,
+    token,
+    user: { email, subscription, avatarURL },
+  });
+};
+
+const reSendVerifyRegisterController = async (req, res) => {
+  const { email } = req.body;
+
+  await reSendVerifyRegister(email);
+
+  res.status(200).json({ message: "Verification email sent" });
+};
+
+const forgotPasswordController = async (req, res) => {
+  const { email } = req.body;
+
+  await forgotPassword(email);
+
+  res.status(200).json({ status: "success" });
 };
 
 const loginController = async (req, res) => {
@@ -63,6 +88,9 @@ const changeAvatarController = async (req, res) => {
 
 module.exports = {
   registrationController,
+  registrationVerifyController,
+  reSendVerifyRegisterController,
+  forgotPasswordController,
   loginController,
   logoutController,
   currentUserController,

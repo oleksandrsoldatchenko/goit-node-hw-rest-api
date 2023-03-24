@@ -1,6 +1,10 @@
 const jsonwebtoken = require("jsonwebtoken");
 const { User } = require("../database/userModel");
 const { CustomError } = require("./errors");
+const sgMail = require("@sendgrid/mail");
+
+require("dotenv").config();
+const { FROM_EMAIL } = process.env;
 
 const asyncWrapper = (controller) => {
   return (req, res, next) => {
@@ -30,4 +34,21 @@ const createToken = async (user) => {
   return token;
 };
 
-module.exports = { asyncWrapper, errorHandler, createToken };
+const sendConfirmRegisterMail = async (email, verificationToken) => {
+  const msg = {
+    to: email,
+    from: FROM_EMAIL,
+    subject: "Thank you for registration",
+    text: `<h1>Please click to activate you account http://localhost:8081/api/users/verify/${verificationToken}</h1>`,
+    html: `<h1>Please  <a href="http://localhost:8081/api/users/verify/${verificationToken}">click</a> to activate your account </h1>`,
+  };
+
+  await sgMail.send(msg);
+};
+
+module.exports = {
+  asyncWrapper,
+  errorHandler,
+  createToken,
+  sendConfirmRegisterMail,
+};
