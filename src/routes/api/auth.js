@@ -40,7 +40,6 @@ router.post(
 );
 router.post(
   "/forgot_password",
-  reSendVerifyRegisterValidation,
   asyncWrapper(forgotPasswordController)
 );
 router.post("/login", userAuthValidation, asyncWrapper(loginController));

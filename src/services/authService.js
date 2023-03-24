@@ -18,6 +18,9 @@ const fs = require("fs").promises;
 const Jimp = require("jimp");
 const { v4: uuidv4 } = require("uuid");
 
+require("dotenv").config();
+const { FROM_EMAIL } = process.env;
+
 const registration = async (email, password) => {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -63,14 +66,20 @@ const verifyRegistration = async (verificationToken) => {
     verificationToken: null,
   });
 
+  const token = await createToken(user);
+  const { email, subscription, avatarURL } = user;
+
   const msg = {
     to: user.email, // Change to your recipient
-    from: "o.soldatchenko@meta.ua",
+    from: FROM_EMAIL,
     subject: "Thank you for registration",
     text: `Registration successfully`,
     html: `<h1>Registration successfully</h1>`,
   };
 
+  await sgMail.send(msg);
+
+  return { email, subscription, avatarURL, token };
 };
 
 const reSendVerifyRegister = async (email) => {
@@ -100,18 +109,18 @@ const forgotPassword = async (email) => {
 
   if (!user) throw new NotAuthorizedError(`No user with email ${email} found`);
 
-  const password = uuidv4();
-  console.log(password);
-  user.password = password;
+  const newPassword = uuidv4();
+  const temporaryPassword = await bcrypt.hash(newPassword, 10);
+  user.password = temporaryPassword;
 
   await user.save();
 
   const msg = {
     to: user.email, // Change to your recipient
-    from: "o.soldatchenko@meta.ua",
+    from: FROM_EMAIL,
     subject: "Change Password",
-    text: `Your temporary password: ${password}`,
-    html: `<h1>Your temporary password: ${password}</h1>`,
+    text: `Your temporary password: ${temporaryPassword}`,
+    html: `<h1>Your temporary password: ${temporaryPassword}</h1>`,
   };
 
   await sgMail.send(msg);

@@ -17,7 +17,6 @@ module.exports = {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error) {
-      // return res.status(400).json({ message: "missing fields" });
       next(new ValidationError(validationResult.error.message));
     }
     next();
@@ -36,7 +35,6 @@ module.exports = {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error) {
-      // return res.status(400).json({ message: "missing fields" });
       next(new ValidationError(validationResult.error.message));
     }
     next();
@@ -49,7 +47,6 @@ module.exports = {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error) {
-      // return res.status(400).json({ message: "missing fields" });
       next(new ValidationError(JSON.stringify(validationResult.error.message)));
     }
     next();
@@ -63,7 +60,6 @@ module.exports = {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error) {
-      // return res.status(400).json({ message: "missing fields" });
       next(new ValidationError(JSON.stringify(validationResult.error.message)));
     }
     next();
@@ -93,7 +89,6 @@ module.exports = {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error) {
-      // return res.status(400).json({ message: "missing fields" });
       next(new ValidationError(JSON.stringify(validationResult.error.message)));
     }
     next();

@@ -12,27 +12,25 @@ const {
 
 const registrationController = async (req, res) => {
   const { email, password } = req.body;
-  const { userEmail, subscription, token, avatarURL } = await registration(
-    email,
-    password
-  );
+  await registration(email, password);
 
   res.status(201).json({
-    token,
-    user: {
-      email: userEmail,
-      subscription,
-      avatarURL,
-    },
+    message: `Please confirm your email. We send confirmation letter to: ${email}`,
   });
 };
 
 const registrationVerifyController = async (req, res) => {
   const { verificationToken } = req.params;
 
-  await verifyRegistration(verificationToken);
+  const { email, subscription, avatarURL, token } = await verifyRegistration(
+    verificationToken
+  );
 
-  res.status(200).json({ message: "Verification successful" });
+  res.status(200).json({
+    message: `Verification successful. Welcome ${email} `,
+    token,
+    user: { email, subscription, avatarURL },
+  });
 };
 
 const reSendVerifyRegisterController = async (req, res) => {
